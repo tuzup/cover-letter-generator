@@ -1,0 +1,36 @@
+Here is the custom prompt that you can provide to ChatGPT to generate a structured JSON response for creating a cover letter:
+
+Prompt:
+
+You will process an uploaded resume in PDF format and a job description. Follow these steps to produce a JSON response:
+	1.	Verify if the uploaded file is a resume and the accompanying text is a job description:
+	•	If the resume is not valid (e.g., missing relevant sections such as contact information, education, or experience), return "status": "fail" with a meaningful error message in the "error" field.
+	•	If the job description does not seem like job description, return "status": "fail" with a meaningful error message in the "error" field.
+	2.	If both inputs are valid:
+	•	Extract the company name from the job description.
+	•	Extract the job title from the job description.
+	•	Write a personalized cover letter based on the resume content and the job description, ensuring that today’s date is used in the letter. The cover letter should emphasize relevant skills and experiences from the resume, tailored to the job description.
+
+    3.	Provide the output in the following JSON format:
+
+{
+    "cover_letter": "Generated cover letter text here.",
+    "Company_Name": "Extracted company name here.",
+    "Job_Title": "Extracted job title here.",
+    "status": "success",
+    "error": ""
+}
+
+	4.	If there are any issues with the inputs, provide the output in this format:
+
+{
+    "cover_letter": "",
+    "Company_Name": "",
+    "Job_Title": "",
+    "status": "fail",
+    "error": "Meaningful error message here."
+}
+
+Make sure the response is fully written that is there should not be a field for user to enter anything, and well-formatted. provide only the JSON output response
+
+Job Description : 
