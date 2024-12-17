@@ -46,7 +46,7 @@ export default function DescriptionSubmit() {
             createdDate: Date.now().toString(),
         }
         const coverLetterID = await storeCoverLetter(info);
-        push(<DisplayCoverLetter {...info} />);
+        push(<DisplayCoverLetter data={info} />);
         await showToast({ title: "Cover Letter Generated", style: Toast.Style.Success });
         setisLoading(false);
     }catch(error){
@@ -74,7 +74,6 @@ export default function DescriptionSubmit() {
                 setJobDescription("");
                 showToast({
                     title: "Error fetching job description",
-                    message: "Enter the job description manually.",
                     style: Toast.Style.Failure,
                 });
                 setisLoading(false);

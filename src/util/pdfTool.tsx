@@ -18,10 +18,6 @@ export async function generatePDF(coverLetter: string, outputPath: string): Prom
 
     // Finalize the PDF and save it
     doc.end();
-
-    writeStream.on('finish', () => {
-        console.log(`PDF created successfully at: ${outputPath}`);
-    });
 }
 
 export function toCamelCase(str: string): string {

@@ -8,16 +8,16 @@ import { CoverLetterInfo } from "../type";
 import { updateCoverLetter } from "../util/storage";
 import CoverLetterHistory from "./historyCoverLetter";
 
-export default function DisplayCoverLetter(data: CoverLetterInfo) {
+export default function DisplayCoverLetter({ data, edit = false }: { data: CoverLetterInfo, edit?: boolean }) {
     const { push } = useNavigation();
     const [coverLetter, setCoverLetter] = useState(data.coverLetter);
     const [companyName, setCompanyName] = useState(data.companyName);
     const [jobTitle, setJobTitle] = useState(data.jobTitle);
     const [matchScore] = useState(data.matchScore);
     const [topSkills] = useState(data.topSkills);
-    const [isEdit, setIsEdit] = useState(false);
+    const [isEdit, setIsEdit] = useState(edit);
 
-    //TODO: update the cover letter edit mode functionality
+
 
     async function handleGeneratePDF() {
         try {
@@ -27,7 +27,7 @@ export default function DisplayCoverLetter(data: CoverLetterInfo) {
                 mkdirSync(coverLetterPath, { recursive: true });
             }
             
-            const filePath = path.join(coverLetterPath, `${toCamelCase(data.companyName)}_${data._id}.pdf`);
+            const filePath = data.pdfPath != "" ? data.pdfPath : path.join(coverLetterPath, `${toCamelCase(data.companyName)}_${data._id}.pdf`);
             await generatePDF(coverLetter, filePath);
             const updatedInfo = { ...data, coverLetter, companyName, jobTitle, pdfPath: filePath };
             await updateCoverLetter(updatedInfo);
@@ -42,6 +42,10 @@ export default function DisplayCoverLetter(data: CoverLetterInfo) {
         const updatedInfo = { ...data, coverLetter: coverLetter, companyName: companyName, jobTitle : jobTitle };
         await updateCoverLetter(updatedInfo);
         setIsEdit(false);
+    }
+
+    function formatString(input: string): string {
+        return input.replace(/\[/g, "```[").replace(/\]/g, "]```");
     }
 
     if (isEdit) {
@@ -60,8 +64,9 @@ export default function DisplayCoverLetter(data: CoverLetterInfo) {
         )
     }
 
+
     return (
-        <Detail markdown={coverLetter}
+        <Detail markdown={formatString(coverLetter)}
             actions={
                 <ActionPanel>
                     <Action title="Create PDF" icon={Icon.Document} onAction={handleGeneratePDF} />

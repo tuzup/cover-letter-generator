@@ -1,12 +1,14 @@
-import { List, ActionPanel, Action, Icon, confirmAlert, Alert, showToast, Toast, popToRoot, closeMainWindow, PopToRootType, environment } from "@raycast/api";
+import { List, ActionPanel, Action, Icon, confirmAlert, Alert, showToast, Toast, popToRoot, closeMainWindow, PopToRootType, environment, useNavigation } from "@raycast/api";
 import { CoverLetterInfo } from "../type";
 import { deleteCoverLetterById, deleteCoverLetterHistory } from "../util/storage";
 import { useState } from "react";
+import DisplayCoverLetter from "./displayCoverLetter";
 
 export default function CoverLetterHistory({ data }: { data: CoverLetterInfo[] }) {
 
     const [coverLetters, setCoverLetters] = useState<CoverLetterInfo[]>(data); 
     const [viewCoverLetter, setViewCoverLetter] = useState(false);
+    const {push} = useNavigation();
 
     async function deleteCoverLetterHistory() {
         const confirmed = await confirmAlert({
@@ -79,7 +81,7 @@ export default function CoverLetterHistory({ data }: { data: CoverLetterInfo[] }
                             }
                             {info.pdfPath && <Action.ToggleQuickLook title="Quick Look" />}
                             <Action.CopyToClipboard title="Copy Cover Letter" shortcut={{ modifiers: ["cmd", "shift"], key: "c" }} content={info.coverLetter} />
-                            {info.pdfPath && <Action.Open title="Open PDF" target={info.pdfPath} />}
+                            <Action title="Edit Cover Letter" icon={Icon.Pencil} shortcut={{ modifiers: ["cmd"], key: "e" }} onAction={() => push(<DisplayCoverLetter data={info} edit={true} />)} />
                             {info.pdfPath && <Action.ShowInFinder path={info.pdfPath ? info.pdfPath : ""} />}
                             <Action title="Delete" icon={Icon.Trash} onAction={() => deleteSingleCoverLetter(info._id)} />
                             <Action icon={Icon.Trash}  title="Remove All Cover Letter History" onAction={deleteCoverLetterHistory} />
