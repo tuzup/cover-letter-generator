@@ -1,4 +1,4 @@
-import { Detail, environment } from "@raycast/api";
+import { environment } from "@raycast/api";
 import path from "path";
 import { existsSync, mkdirSync } from "fs";
 import config = require("./config.json");
@@ -12,7 +12,7 @@ export default function Command() {
   if (!existsSync(assetPath)) {
     mkdirSync(assetPath, { recursive: true });
   }
-  if(!existsSync(coverLetterPath)){
+  if (!existsSync(coverLetterPath)) {
     mkdirSync(coverLetterPath, { recursive: true });
   }
 

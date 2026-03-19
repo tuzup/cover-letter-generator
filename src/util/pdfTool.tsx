@@ -1,33 +1,35 @@
-import { showToast } from "@raycast/api";
+import PDFDocument from "pdfkit";
+import fs from "fs";
 
-const PDFDocument = require('pdfkit');
-const fs = require('fs');
-
-export async function generatePDF(coverLetter: string, outputPath: string): Promise<void> {
-    const doc = new PDFDocument();
-
-    const writeStream = fs.createWriteStream(outputPath);
-
-    // Pipe the PDF document to the file
-    doc.pipe(writeStream);
-
-    doc
-        .fontSize(12)
-        .text(coverLetter);
-
-
-    // Finalize the PDF and save it
-    doc.end();
+export function toCamelCase(str: string) {
+  return str
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+    .replace(/\s+/g, "");
 }
 
-export function toCamelCase(str: string): string {
-    return str
-        .split(" ")                          // Split the string by spaces
-        .map((word, index) => {
-            if (index === 0) {
-                return word.toLowerCase();       // Keep the first word lowercase
-            }
-            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(); // Capitalize the first letter of subsequent words
-        })
-        .join("");                           // Join the array back into a string
+export async function generatePDF(content: string, filePath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new PDFDocument();
+      const stream = fs.createWriteStream(filePath);
+
+      doc.pipe(stream);
+      doc.fontSize(12).text(content, {
+        align: "left",
+      });
+      doc.end();
+
+      stream.on("finish", () => {
+        resolve();
+      });
+
+      stream.on("error", (error) => {
+        reject(error);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
