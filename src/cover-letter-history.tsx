@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import CoverLetterHistory from "./components/historyCoverLetter";
-import { deleteCoverLetterHistory, getCoverLetterHistory } from "./util/storage";
+import { getCoverLetterHistory } from "./util/storage";
 import { CoverLetterInfo } from "./type";
 import { Detail } from "@raycast/api";
 
@@ -12,7 +12,7 @@ export default function Command() {
         const fetchCoverLetterHistory = async () => {
             const history = await getCoverLetterHistory();
             setCoverLettrs(history);
-            setIsLoading(false);
+            setIsLoading(false);            
         };
         fetchCoverLetterHistory();
         

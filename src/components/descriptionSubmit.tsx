@@ -25,35 +25,37 @@ export default function DescriptionSubmit() {
     const metadataPath = path.join(environment.supportPath, config.metadataPath);
 
     async function handleGenerate() {
-        try{
-        setisLoading(true);
-        await showToast({ title: "Generating Cover Letter", style: Toast.Style.Animated });
-        const response = await generateCoverLetter(jobDescription);
-        const responseJson  = JSON.parse(response);
-        if(responseJson?.status === "fail"){
-            await showToast({ title: "Error", message: responseJson?.error_message, style: Toast.Style.Failure });
-            return;
+        try {
+            setisLoading(true);
+            await showToast({ title: "Working with Gemini...", style: Toast.Style.Animated });
+            const response = await generateCoverLetter(jobDescription);
+            const responseJson = JSON.parse(response);
+            if (responseJson?.status === "fail") {
+                await showToast({ title: "Error", message: responseJson?.error_message, style: Toast.Style.Failure });
+                return;
+            }
+            else if (responseJson?.status === "success") {
+                const info: CoverLetterInfo = {
+                    _id: `${Date.now()}`,
+                    companyName: responseJson.company_name,
+                    jobTitle: responseJson.job_title,
+                    jobDescription: jobDescription,
+                    matchScore: responseJson.match_score,
+                    topSkills: responseJson.top_skills,
+                    coverLetter: responseJson.cover_letter,
+                    pdfPath: "",
+                    createdDate: Date.now().toString(),
+                }
+                const coverLetterID = await storeCoverLetter(info);
+                push(<DisplayCoverLetter data={info} />);
+                await showToast({ title: "Cover Letter Generated", style: Toast.Style.Success });
+                setisLoading(false);
+            }
+        } catch (error) {
+            console.error(error);
+            await showToast({ title: "Error", message: "Failed to generate cover letter", style: Toast.Style.Failure });
         }
-        const info : CoverLetterInfo = {
-            _id: `${Date.now()}`,
-            companyName: responseJson.company_name,
-            jobTitle: responseJson.job_title,
-            jobDescription: jobDescription,
-            matchScore: responseJson.match_score,
-            topSkills: responseJson.top_skills,
-            coverLetter: responseJson.cover_letter,
-            pdfPath: "",
-            createdDate: Date.now().toString(),
-        }
-        const coverLetterID = await storeCoverLetter(info);
-        push(<DisplayCoverLetter data={info} />);
-        await showToast({ title: "Cover Letter Generated", style: Toast.Style.Success });
-        setisLoading(false);
-    }catch(error){
-        console.error(error);
-        await showToast({ title: "Error", message: "Failed to generate cover letter", style: Toast.Style.Failure });
     }
-}
 
     useEffect(() => {
         (async () => {
@@ -81,11 +83,11 @@ export default function DescriptionSubmit() {
         })();
     }, [jobDescription]);
 
-    if(isLoading){
-        showToast({ title: "Loading..", style: Toast.Style.Animated });
-        return <Detail markdown={""}  isLoading={true}/>;
+    if (isLoading) {
+        //showToast({ title: "Working with Gemini..", style: Toast.Style.Animated });
+        return <Detail markdown={""} isLoading={true} />;
     }
-    return(
+    return (
         <Detail markdown={jobDescription}
             navigationTitle="Cover Letter Maker"
             isLoading={isLoading}
@@ -99,17 +101,17 @@ export default function DescriptionSubmit() {
             metadata={
                 <Detail.Metadata>
                     <Detail.Metadata.TagList title="Resume">
-                        <Detail.Metadata.TagList.Item text={resumeMetadata.originalName}  />
-                        <Detail.Metadata.TagList.Item text={`Date: ${resumeMetadata.uploadDate}`}  />
+                        <Detail.Metadata.TagList.Item text={resumeMetadata.originalName} />
+                        <Detail.Metadata.TagList.Item text={`Date: ${resumeMetadata.uploadDate}`} />
                     </Detail.Metadata.TagList>
                     {resumeMetadata.description !== "" &&
                         <Detail.Metadata.Label title="Description" text={resumeMetadata.description} />}
                     <Detail.Metadata.Separator />
                     <Detail.Metadata.TagList title="Actions">
-                        <Detail.Metadata.TagList.Item text="Change Resume ⌘ ⏎" onAction={() => push(<ResumeUpload />)} />  
-                        <Detail.Metadata.TagList.Item text="Open Resume ⌘ Y" /> 
+                        <Detail.Metadata.TagList.Item text="Change Resume ⌘ ⏎" onAction={() => push(<ResumeUpload />)} />
+                        <Detail.Metadata.TagList.Item text="Open Resume ⌘ Y" />
                     </Detail.Metadata.TagList>
-                </Detail.Metadata>  
+                </Detail.Metadata>
             }
         />
     );

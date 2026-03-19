@@ -10,7 +10,7 @@ export default function CoverLetterHistory({ data }: { data: CoverLetterInfo[] }
     const [viewCoverLetter, setViewCoverLetter] = useState(false);
     const {push} = useNavigation();
 
-    async function deleteCoverLetterHistory() {
+    async function handleDeleteCoverLetterHistory() {
         const confirmed = await confirmAlert({
             title: "Are you sure?",
             message: `Do you really want to delete all cover letters?\n This action cannot be undone.`,
@@ -84,7 +84,7 @@ export default function CoverLetterHistory({ data }: { data: CoverLetterInfo[] }
                             <Action title="Edit Cover Letter" icon={Icon.Pencil} shortcut={{ modifiers: ["cmd"], key: "e" }} onAction={() => push(<DisplayCoverLetter data={info} edit={true} />)} />
                             {info.pdfPath && <Action.ShowInFinder path={info.pdfPath ? info.pdfPath : ""} />}
                             <Action title="Delete" icon={Icon.Trash} onAction={() => deleteSingleCoverLetter(info._id)} />
-                            <Action icon={Icon.Trash}  title="Remove All Cover Letter History" onAction={deleteCoverLetterHistory} />
+                            <Action icon={Icon.Trash} title="Remove All Cover Letter History" onAction={handleDeleteCoverLetterHistory} />
                         </ActionPanel>
                     }
                 />

@@ -15,7 +15,7 @@ global.Headers = Headers;
 const prompt = config.prompt;
 const resumePath = path.join(environment.supportPath, config.resumePath);
 const apiKey = getPreferenceValues().apiKey;
-
+const model = getPreferenceValues().model;
 
 
 export async function generateCoverLetter(jobDesctiption : string) : Promise<string> {
@@ -23,15 +23,15 @@ export async function generateCoverLetter(jobDesctiption : string) : Promise<str
    try {
       const genAI = new GoogleGenerativeAI(apiKey);
       const fileManager = new GoogleAIFileManager(apiKey);
-      const model = genAI.getGenerativeModel({
-         model: "gemini-1.5-flash",
+      const agent = genAI.getGenerativeModel({
+         model: model,
          systemInstruction: prompt,
       });
       const uploadResponse = await fileManager.uploadFile(resumePath, {
          mimeType: "application/pdf",
          displayName: "ResumePDF",
       });
-      const result = await model.generateContent([
+      const result = await agent.generateContent([
          {
             fileData: {
                mimeType: uploadResponse.file.mimeType,
