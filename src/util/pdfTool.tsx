@@ -14,21 +14,18 @@ export function toCamelCase(str: string) {
 export async function generatePDF(content: string, filePath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
-      const doc = new PDFDocument();
-      const stream = fs.createWriteStream(filePath);
-
       // Path to the bundled font in assets/fonts
       const fontPath = path.join(environment.assetsPath, "fonts", "Roboto-Regular.ttf");
 
-      doc.pipe(stream);
-
-      // Register and use the font before adding text
-      if (fs.existsSync(fontPath)) {
-        doc.font(fontPath);
-      } else {
+      if (!fs.existsSync(fontPath)) {
         reject(new Error(`Font not found at path: ${fontPath}`));
         return;
       }
+
+      const doc = new PDFDocument({ font: fontPath });
+      const stream = fs.createWriteStream(filePath);
+
+      doc.pipe(stream);
 
       doc.fontSize(12).text(content, {
         align: "left",
