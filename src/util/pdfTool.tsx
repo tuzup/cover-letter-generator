@@ -1,5 +1,7 @@
 import PDFDocument from "pdfkit";
 import fs from "fs";
+import path from "path";
+import { environment } from "@raycast/api";
 
 export function toCamelCase(str: string) {
   return str
@@ -15,7 +17,16 @@ export async function generatePDF(content: string, filePath: string): Promise<vo
       const doc = new PDFDocument();
       const stream = fs.createWriteStream(filePath);
 
+      // Path to the bundled font in assets
+      const fontPath = path.join(environment.assetsPath, "Roboto-Regular.ttf");
+
       doc.pipe(stream);
+
+      // Register and use the font before adding text
+      if (fs.existsSync(fontPath)) {
+        doc.font(fontPath);
+      }
+
       doc.fontSize(12).text(content, {
         align: "left",
       });
